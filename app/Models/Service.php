@@ -11,6 +11,11 @@ class Service extends Model
 
     protected $guarded = [];
 
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

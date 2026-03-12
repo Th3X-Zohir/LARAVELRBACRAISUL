@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Service;
+use App\Models\Type;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,6 +20,7 @@ class ServiceFactory extends Factory
     public function definition(): array
     {
         return [
+            'type_id' => Type::query()->inRandomOrder()->value('id') ?? Type::factory(),
             'name' => fake()->unique()->words(3, true),
             'description' => fake()->optional(0.8)->paragraph(),
             'created_by' => User::factory(),

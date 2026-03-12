@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Models\Type;
 use App\Models\User;
 use App\Models\Responsibility;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class ServiceController extends Controller
      */
     public function index(Request $request): Response
     {
-        $services = Service::with('responsibilities.user')
+        $services = Service::with('type', 'responsibilities.user')
             ->orderBy('name')
             ->get();
 
@@ -25,9 +26,14 @@ class ServiceController extends Controller
             ->whereHas('role', fn ($q) => $q->where('name', 'admin'))
             ->get();
 
+        $types = Type::query()
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('Super/Services', [
             'services' => $services,
             'admins' => $adminRole,
+            'types' => $types,
         ]);
     }
 
@@ -45,11 +51,13 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'type_id' => ['required', 'integer', 'exists:types,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
         ]);
 
         $service = Service::create([
+            'type_id' => $validated['type_id'],
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'created_by' => Auth::id(),

@@ -7,6 +7,7 @@ use App\Models\Resolve;
 use App\Models\Responsibility;
 use App\Models\Role;
 use App\Models\Service;
+use App\Models\Type;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -78,9 +79,19 @@ class DatabaseSeeder extends Seeder
 
         $allUsers = $users->push($admin, $super);
 
+        $typeNames = [];
+        $types = collect();
+
+        foreach ($typeNames as $name) {
+            $types->push(
+                Type::firstOrCreate(['name' => $name])
+            );
+        }
+
         $services = Service::factory()
             ->count(10)
             ->recycle($allUsers)
+            ->recycle($types)
             ->create();
 
         $targetResponsibilities = 30;

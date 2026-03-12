@@ -3,7 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Services() {
-    const { services = [], admins = [] } = usePage().props;
+    const { services = [], admins = [], types = [] } = usePage().props;
 
     const [selectedService, setSelectedService] = useState(null);
 
@@ -15,6 +15,7 @@ export default function Services() {
         errors,
         reset,
     } = useForm({
+        type_id: '',
         name: '',
         description: '',
     });
@@ -50,8 +51,40 @@ export default function Services() {
                     <Card title="Create new service">
                         <form
                             onSubmit={handleCreate}
-                            className="grid gap-4 sm:grid-cols-[2fr,3fr,auto]"
+                            className="grid gap-4 sm:grid-cols-[1.3fr,2fr,3fr,auto]"
                         >
+                            <div>
+                                <label
+                                    htmlFor="type_id"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Type
+                                </label>
+                                <select
+                                    id="type_id"
+                                    value={data.type_id}
+                                    onChange={(e) =>
+                                        setData('type_id', e.target.value)
+                                    }
+                                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    required
+                                >
+                                    <option value="" disabled>
+                                        Select a type…
+                                    </option>
+                                    {types.map((t) => (
+                                        <option key={t.id} value={t.id}>
+                                            {t.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.type_id && (
+                                    <p className="mt-1 text-xs text-rose-500">
+                                        {errors.type_id}
+                                    </p>
+                                )}
+                            </div>
+
                             <div>
                                 <label
                                     htmlFor="name"
@@ -124,6 +157,9 @@ export default function Services() {
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                Type
+                                            </th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                                 Name
                                             </th>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -140,6 +176,13 @@ export default function Services() {
                                     <tbody className="divide-y divide-gray-200 bg-white text-sm">
                                         {services.map((service) => (
                                             <tr key={service.id}>
+                                                <td className="px-4 py-2 text-gray-700">
+                                                    {service.type?.name ?? (
+                                                        <span className="text-gray-400">
+                                                            —
+                                                        </span>
+                                                    )}
+                                                </td>
                                                 <td className="px-4 py-2">
                                                     <span className="font-medium text-gray-900">
                                                         {service.name}
