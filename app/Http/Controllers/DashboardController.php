@@ -6,6 +6,8 @@ use App\Models\Report;
 use App\Models\Resolve;
 use App\Models\Responsibility;
 use App\Models\Role;
+use App\Models\Service;
+use App\Models\ServicePurchase;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -82,9 +84,17 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
+        $services = Service::orderBy('name')->get();
+
+        $purchasedServiceIds = ServicePurchase::where('user_id', $user->id)
+            ->pluck('service_id')
+            ->all();
+
         return Inertia::render('Dashboard', [
             'role' => 'user',
             'reports' => $reports,
+            'services' => $services,
+            'purchasedServiceIds' => $purchasedServiceIds,
         ]);
     }
 }

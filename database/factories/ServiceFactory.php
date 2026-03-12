@@ -22,6 +22,7 @@ class ServiceFactory extends Factory
         return [
             'type_id' => Type::query()->inRandomOrder()->value('id') ?? Type::factory(),
             'name' => fake()->unique()->words(3, true),
+            'price' => fake()->randomFloat(2, 10, 1000),
             'description' => fake()->optional(0.8)->paragraph(),
             'created_by' => User::factory(),
         ];

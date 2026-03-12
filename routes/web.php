@@ -10,6 +10,8 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\AdminResolveController;
 use App\Http\Controllers\UserReportController;
+use App\Http\Controllers\ServicePurchaseController;
+use App\Http\Controllers\UserServiceController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -61,6 +63,8 @@ Route::middleware(['auth', 'verified', 'role:user,admin,super'])
     ->name('user.')
     ->group(function () {
         Route::get('/services', [UserReportController::class, 'index'])->name('services.index');
+        Route::get('/my-services', [UserServiceController::class, 'index'])->name('services.mine');
+        Route::post('/services/{service}/buy', [ServicePurchaseController::class, 'store'])->name('services.buy');
         Route::post('/reports', [UserReportController::class, 'store'])->name('reports.store');
         Route::get('/reports/{report}/edit', [UserReportController::class, 'edit'])->name('reports.edit');
         Route::patch('/reports/{report}', [UserReportController::class, 'update'])->name('reports.update');

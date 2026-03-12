@@ -11,6 +11,8 @@ export default function Dashboard() {
         reports = [],
         resolves = [],
         assignedServices = [],
+        services = [],
+        purchasedServiceIds = [],
     } = usePage().props;
 
     const currentRole = role ?? auth?.user?.role?.name ?? 'user';
@@ -55,6 +57,17 @@ export default function Dashboard() {
                             </Link>
                         </div>
                     )}
+
+                    {currentRole === 'user' && (
+                        <div className="flex gap-2">
+                            <Link
+                                href={route('user.services.mine')}
+                                className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-500"
+                            >
+                                My services
+                            </Link>
+                        </div>
+                    )}
                 </div>
             }
         >
@@ -80,6 +93,10 @@ export default function Dashboard() {
                     {currentRole === 'user' && (
                         <>
                             <UserQuickLinks />
+                            <UserServices
+                                services={services}
+                                purchasedServiceIds={purchasedServiceIds}
+                            />
                             <UserReports reports={reports} />
                         </>
                     )}
@@ -348,6 +365,77 @@ function UserQuickLinks() {
                 >
                     Report a problem
                 </Link>
+            </div>
+        </Card>
+    );
+}
+
+function UserServices({ services, purchasedServiceIds }) {
+    if (!services || services.length === 0) {
+        return (
+            <Card title="Available services">
+                    <p className="text-sm text-gray-500">
+                    No services are available to purchase yet.
+                    </p>
+            </Card>
+        );
+    }
+
+    return (
+        <Card title="Available services">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {services.map((service) => {
+                    const alreadyPurchased = purchasedServiceIds.includes(
+                        service.id,
+                    );
+
+                    return (
+                        <div
+                            key={service.id}
+                            className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 text-sm shadow-sm"
+                        >
+                            <div>
+                                <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    {service.type?.name ?? 'Service'}
+                                </p>
+                                <h3 className="mt-1 text-base font-semibold text-gray-900">
+                                    {service.name}
+                                </h3>
+                                <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                                    {service.description || 'No description provided.'}
+                                </p>
+                                <p className="mt-2 text-sm font-semibold text-gray-900">
+                                    {service.price !== null &&
+                                    service.price !== undefined
+                                        ? `৳${Number(
+                                              service.price,
+                                          ).toFixed(2)}`
+                                        : 'Contact for price'}
+                                </p>
+                            </div>
+
+                            <div className="mt-4">
+                                {alreadyPurchased ? (
+                                    <span className="inline-flex items-center rounded-md bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-800">
+                                        Already purchased
+                                    </span>
+                                ) : (
+                                    <Link
+                                        href={route(
+                                            'user.services.buy',
+                                            service.id,
+                                        )}
+                                        method="post"
+                                        as="button"
+                                        className="inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-500"
+                                    >
+                                        Buy service
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         </Card>
     );

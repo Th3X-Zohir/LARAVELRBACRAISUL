@@ -53,12 +53,14 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'type_id' => ['required', 'integer', 'exists:types,id'],
             'name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
         ]);
 
         $service = Service::create([
             'type_id' => $validated['type_id'],
             'name' => $validated['name'],
+            'price' => $validated['price'],
             'description' => $validated['description'] ?? null,
             'created_by' => Auth::id(),
         ]);

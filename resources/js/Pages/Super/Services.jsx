@@ -17,6 +17,7 @@ export default function Services() {
     } = useForm({
         type_id: '',
         name: '',
+        price: '',
         description: '',
     });
 
@@ -51,7 +52,7 @@ export default function Services() {
                     <Card title="Create new service">
                         <form
                             onSubmit={handleCreate}
-                            className="grid gap-4 sm:grid-cols-[1.3fr,2fr,3fr,auto]"
+                            className="grid gap-4 sm:grid-cols-[1.3fr,2fr,1.5fr,3fr,auto]"
                         >
                             <div>
                                 <label
@@ -111,6 +112,32 @@ export default function Services() {
 
                             <div>
                                 <label
+                                    htmlFor="price"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Price
+                                </label>
+                                <input
+                                    id="price"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={data.price}
+                                    onChange={(e) =>
+                                        setData('price', e.target.value)
+                                    }
+                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    required
+                                />
+                                {errors.price && (
+                                    <p className="mt-1 text-xs text-rose-500">
+                                        {errors.price}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label
                                     htmlFor="description"
                                     className="block text-sm font-medium text-gray-700"
                                 >
@@ -163,6 +190,9 @@ export default function Services() {
                                                 Name
                                             </th>
                                             <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                Price
+                                            </th>
+                                            <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                                 Description
                                             </th>
                                             <th className="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -187,6 +217,22 @@ export default function Services() {
                                                     <span className="font-medium text-gray-900">
                                                         {service.name}
                                                     </span>
+                                                </td>
+                                                <td className="px-4 py-2 text-gray-700">
+                                                    {service.price !== null &&
+                                                    service.price !==
+                                                        undefined ? (
+                                                        <>
+                                                            $
+                                                            {Number(
+                                                                service.price,
+                                                            ).toFixed(2)}
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-gray-400">
+                                                            —
+                                                        </span>
+                                                    )}
                                                 </td>
                                                 <td className="px-4 py-2 text-gray-700">
                                                     {service.description ?? (
