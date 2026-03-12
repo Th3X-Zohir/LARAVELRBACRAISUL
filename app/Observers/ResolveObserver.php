@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Resolve;
+use App\Notifications\ReportResolvedNotification;
 use Illuminate\Support\Facades\Log;
 
 class ResolveObserver
@@ -18,6 +19,13 @@ class ResolveObserver
             'status' => $resolve->status,
             'updated_by' => $resolve->updated_by,
         ]);
+
+        if ($resolve->status === 'resolved') {
+            $report = $resolve->report;
+            if ($report?->user_id) {
+                $report->user?->notify(new ReportResolvedNotification($resolve));
+            }
+        }
     }
 
     /**

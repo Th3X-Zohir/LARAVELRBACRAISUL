@@ -5,7 +5,8 @@ import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const { auth, unread_notifications = [], unread_notifications_count = 0 } = usePage().props;
+    const user = auth?.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -27,7 +28,60 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
+                            <div className="relative ms-3 flex items-center gap-2">
+                                <Dropdown>
+                                    <Dropdown.Trigger>
+                                        <span className="inline-flex rounded-md">
+                                            <button
+                                                type="button"
+                                                className="relative inline-flex rounded-md p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 focus:outline-none"
+                                                aria-label="Notifications"
+                                            >
+                                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                                </svg>
+                                                {unread_notifications_count > 0 && (
+                                                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-medium text-white">
+                                                        {unread_notifications_count > 99 ? '99+' : unread_notifications_count}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        </span>
+                                    </Dropdown.Trigger>
+                                    <Dropdown.Content align="right" width="72" contentClasses="py-1 bg-white max-h-80 overflow-y-auto">
+                                        {unread_notifications.length === 0 ? (
+                                            <div className="px-4 py-3 text-sm text-gray-500">No new notifications</div>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2">
+                                                    <span className="text-xs font-medium text-gray-500">Notifications</span>
+                                                    <Link
+                                                        href={route('notifications.read-all')}
+                                                        method="post"
+                                                        as="button"
+                                                        className="text-xs text-indigo-600 hover:text-indigo-800"
+                                                    >
+                                                        Mark all read
+                                                    </Link>
+                                                </div>
+                                                {unread_notifications.map((n) => (
+                                                    <Dropdown.Link
+                                                        key={n.id}
+                                                        href={route('notifications.read', n.id)}
+                                                        className="block whitespace-normal py-2"
+                                                    >
+                                                        <span className="text-sm text-gray-700">{n.data?.message ?? 'Notification'}</span>
+                                                        {n.created_at && (
+                                                            <span className="mt-0.5 block text-xs text-gray-400">
+                                                                {new Date(n.created_at).toLocaleString()}
+                                                            </span>
+                                                        )}
+                                                    </Dropdown.Link>
+                                                ))}
+                                            </>
+                                        )}
+                                    </Dropdown.Content>
+                                </Dropdown>
                                 <Dropdown>
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">

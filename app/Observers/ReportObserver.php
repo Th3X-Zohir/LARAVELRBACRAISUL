@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Models\Report;
+use App\Models\Responsibility;
+use App\Notifications\ReportCreatedNotification;
 use Illuminate\Support\Facades\Log;
 
 class ReportObserver
@@ -18,6 +20,19 @@ class ReportObserver
             'user_id' => $report->user_id,
             'status' => $report->status,
         ]);
+
+        $admins = Responsibility::where('service_id', $report->service_id)
+            ->with('user')
+            ->get()
+            ->pluck('user')
+            ->filter()
+            ->unique('id');
+
+        foreach ($admins as $admin) {
+            if ($admin->id !== $report->user_id) {
+                $admin->notify(new ReportCreatedNotification($report));
+            }
+        }
     }
 
     /**
