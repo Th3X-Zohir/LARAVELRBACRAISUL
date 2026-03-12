@@ -71,6 +71,7 @@ export default function Dashboard() {
 
                     {currentRole === 'admin' && (
                         <>
+                            <AdminQuickLinks />
                             <AdminServices assignedServices={assignedServices} />
                             <AdminReports reports={reports} />
                         </>
@@ -213,6 +214,33 @@ function AdminServices({ assignedServices }) {
                         </div>
                     </div>
                 ))}
+            </div>
+        </Card>
+    );
+}
+
+function AdminQuickLinks() {
+    return (
+        <Card title="Quick links">
+            <div className="flex flex-wrap gap-2 text-xs">
+                <Link
+                    href={route('admin.users.index')}
+                    className="inline-flex items-center rounded-md bg-slate-700 px-3 py-1.5 font-medium text-white shadow-sm hover:bg-slate-600"
+                >
+                    Users list
+                </Link>
+                <Link
+                    href={route('admin.reports.index')}
+                    className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 font-medium text-white shadow-sm hover:bg-indigo-500"
+                >
+                    Reports
+                </Link>
+                <Link
+                    href={route('admin.resolves.index')}
+                    className="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 font-medium text-white shadow-sm hover:bg-emerald-500"
+                >
+                    Your resolves
+                </Link>
             </div>
         </Card>
     );

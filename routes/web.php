@@ -5,6 +5,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SuperUserController;
 use App\Http\Controllers\SuperReportController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminReportController;
+use App\Http\Controllers\AdminResolveController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +40,16 @@ Route::middleware(['auth', 'verified', 'role:super'])
         Route::get('/users', [SuperUserController::class, 'index'])->name('users.index');
         Route::get('/reports', [SuperReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/{report}/resolve', [SuperReportController::class, 'resolve'])->name('reports.resolve');
+    });
+
+Route::middleware(['auth', 'verified', 'role:admin,super'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+        Route::post('/reports/{report}/resolve', [AdminReportController::class, 'resolve'])->name('reports.resolve');
+        Route::get('/resolves', [AdminResolveController::class, 'index'])->name('resolves.index');
     });
 
 require __DIR__.'/auth.php';
