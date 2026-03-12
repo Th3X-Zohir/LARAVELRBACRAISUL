@@ -78,7 +78,10 @@ export default function Dashboard() {
                     )}
 
                     {currentRole === 'user' && (
-                        <UserReports reports={reports} />
+                        <>
+                            <UserQuickLinks />
+                            <UserReports reports={reports} />
+                        </>
                     )}
                 </div>
             </div>
@@ -290,28 +293,61 @@ function UserReports({ reports }) {
                 {reports.map((r) => (
                     <div
                         key={r.id}
-                        className="rounded-lg border border-gray-100 px-3 py-2.5"
+                        className="flex items-start justify-between gap-2 rounded-lg border border-gray-100 px-3 py-2.5"
                     >
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                                {r.service?.name ?? 'Unknown service'}
-                            </span>
-                            <StatusPill status={r.status} />
-                        </div>
-                        <p className="mt-1 line-clamp-2 text-sm text-gray-800">
-                            {r.description}
-                        </p>
-                        {r.resolves?.length > 0 && (
-                            <p className="mt-1 text-xs text-gray-500">
-                                Latest update:{' '}
-                                {
-                                    r.resolves[0]
-                                        ?.comment
-                                }
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                                    {r.service?.name ?? 'Unknown service'}
+                                </span>
+                                <StatusPill status={r.status} />
+                            </div>
+                            <p className="mt-1 line-clamp-2 text-sm text-gray-800">
+                                {r.description}
                             </p>
-                        )}
+                            {r.resolves?.length > 0 && (
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Latest update:{' '}
+                                    {
+                                        r.resolves[0]
+                                            ?.comment
+                                    }
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex shrink-0 gap-1.5">
+                            <Link
+                                href={route('user.reports.edit', r.id)}
+                                className="rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm hover:bg-indigo-500"
+                            >
+                                Edit
+                            </Link>
+                            <Link
+                                href={route('user.reports.destroy', r.id)}
+                                method="delete"
+                                as="button"
+                                className="rounded-md bg-rose-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm hover:bg-rose-500"
+                            >
+                                Remove
+                            </Link>
+                        </div>
                     </div>
                 ))}
+            </div>
+        </Card>
+    );
+}
+
+function UserQuickLinks() {
+    return (
+        <Card title="Quick links">
+            <div className="flex flex-wrap gap-2 text-xs">
+                <Link
+                    href={route('user.services.index')}
+                    className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 font-medium text-white shadow-sm hover:bg-indigo-500"
+                >
+                    Report a problem
+                </Link>
             </div>
         </Card>
     );

@@ -8,6 +8,7 @@ use App\Http\Controllers\SuperReportController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\AdminResolveController;
+use App\Http\Controllers\UserReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,17 @@ Route::middleware(['auth', 'verified', 'role:admin,super'])
         Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/{report}/resolve', [AdminReportController::class, 'resolve'])->name('reports.resolve');
         Route::get('/resolves', [AdminResolveController::class, 'index'])->name('resolves.index');
+    });
+
+Route::middleware(['auth', 'verified', 'role:user,admin,super'])
+    ->prefix('user')
+    ->name('user.')
+    ->group(function () {
+        Route::get('/services', [UserReportController::class, 'index'])->name('services.index');
+        Route::post('/reports', [UserReportController::class, 'store'])->name('reports.store');
+        Route::get('/reports/{report}/edit', [UserReportController::class, 'edit'])->name('reports.edit');
+        Route::patch('/reports/{report}', [UserReportController::class, 'update'])->name('reports.update');
+        Route::delete('/reports/{report}', [UserReportController::class, 'destroy'])->name('reports.destroy');
     });
 
 require __DIR__.'/auth.php';
