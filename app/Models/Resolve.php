@@ -10,4 +10,14 @@ class Resolve extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function report()
+    {
+        return $this->belongsTo(Report::class);
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

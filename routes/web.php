@@ -1,27 +1,42 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SuperUserController;
+use App\Http\Controllers\SuperReportController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware(['auth', 'verified', 'role:super'])
+    ->prefix('super')
+    ->name('super.')
+    ->group(function () {
+        Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+        Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+        Route::post('/services/{service}/assign-admins', [ServiceController::class, 'assignAdmins'])
+            ->name('services.assign-admins');
+        Route::get('/users', [SuperUserController::class, 'index'])->name('users.index');
+        Route::get('/reports', [SuperReportController::class, 'index'])->name('reports.index');
+        Route::post('/reports/{report}/resolve', [SuperReportController::class, 'resolve'])->name('reports.resolve');
+    });
 
 require __DIR__.'/auth.php';
